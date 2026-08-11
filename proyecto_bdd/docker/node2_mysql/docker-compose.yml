@@ -1,0 +1,25 @@
+# Ejecutar SOLO en la laptop del Nodo 2 (IP fija 192.168.10.2 configurada en el S.O.)
+#   cd docker/node2_mysql
+#   docker compose up -d
+#
+# El contenedor publica el puerto 3306 en TODAS las interfaces de la laptop
+# (0.0.0.0), por lo que queda accesible en 192.168.10.2:3306 desde los otros
+# dos nodos, siempre que el firewall del sistema operativo lo permita.
+
+version: "3.8"
+
+services:
+  mysql_node2:
+    image: mysql:8.4
+    container_name: bdd_mysql_node2
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: BiblioMy2026
+      MYSQL_DATABASE: biblioteca
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

@@ -1,0 +1,26 @@
+# Ejecutar SOLO en la laptop del Nodo 1 (IP fija 192.168.10.1 configurada en el S.O.)
+#   cd docker/node1_postgres
+#   docker compose up -d
+#
+# El contenedor publica el puerto 5432 en TODAS las interfaces de la laptop
+# (0.0.0.0), por lo que queda accesible en 192.168.10.1:5432 desde los otros
+# dos nodos, siempre que el firewall del sistema operativo lo permita.
+
+version: "3.8"
+
+services:
+  postgres_node1:
+    image: postgres:16
+    container_name: bdd_postgres_node1
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin_biblioteca
+      POSTGRES_PASSWORD: BiblioPG2026
+      POSTGRES_DB: biblioteca
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:

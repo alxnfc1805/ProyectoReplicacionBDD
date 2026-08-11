@@ -1,0 +1,30 @@
+# Ejecutar SOLO en la laptop del Nodo 3 (IP fija 192.168.10.3 configurada en el S.O.)
+#   cd docker/node3_sqlserver
+#   docker compose up -d
+#
+# El contenedor publica el puerto 1433 en TODAS las interfaces de la laptop
+# (0.0.0.0), por lo que queda accesible en 192.168.10.3:1433 desde los otros
+# dos nodos, siempre que el firewall del sistema operativo lo permita.
+#
+# Nota: si "2025" aún no tiene imagen oficial disponible en Docker Hub al
+# momento de hacer el proyecto, usar mcr.microsoft.com/mssql/server:2022-latest
+# como motor funcionalmente equivalente (revisar tags vigentes en Docker Hub).
+
+version: "3.8"
+
+services:
+  sqlserver_node3:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: bdd_sqlserver_node3
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "BiblioSQL2026!"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+volumes:
+  mssql_data:

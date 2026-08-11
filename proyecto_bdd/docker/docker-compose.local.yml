@@ -1,0 +1,54 @@
+# docker-compose.local.yml
+# Levanta los 3 motores en UNA sola máquina (localhost, puertos distintos)
+# Uso: solo para probar la interfaz y la lógica de conexión ANTES de repartir
+# cada motor en su laptop/nodo físico correspondiente.
+#
+#   cd docker
+#   docker compose -f docker-compose.local.yml up -d
+#
+version: "3.8"
+
+services:
+
+  postgres_node1:
+    image: postgres:16
+    container_name: bdd_postgres_node1
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin_biblioteca
+      POSTGRES_PASSWORD: BiblioPG2026
+      POSTGRES_DB: biblioteca
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  mysql_node2:
+    image: mysql:8.4
+    container_name: bdd_mysql_node2
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: BiblioMy2026
+      MYSQL_DATABASE: biblioteca
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  sqlserver_node3:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: bdd_sqlserver_node3
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "BiblioSQL2026!"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+volumes:
+  pg_data:
+  mysql_data:
+  mssql_data:

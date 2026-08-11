@@ -1,0 +1,47 @@
+# Simulación con 2 laptops: esta laptop (Laptop A) aloja el Nodo 1 y el Nodo 2
+# a la vez, usando IP aliasing (dos IPs sobre la misma tarjeta de red).
+#
+# Requisito previo en el sistema operativo de esta laptop:
+#   Linux:   sudo ip addr add 192.168.10.1/24 dev eth0
+#            sudo ip addr add 192.168.10.2/24 dev eth0
+#   Windows: Adaptador de red -> IPv4 -> Opciones avanzadas -> Agregar IP
+#            192.168.10.1 (principal) y 192.168.10.2 (secundaria)
+#
+# La diferencia clave frente a docker-compose.local.yml: aquí cada puerto se
+# enlaza a UNA IP específica (no a 0.0.0.0), para que cada "nodo" conserve su
+# propia dirección aunque estén en la misma máquina física.
+#
+#   cd docker/laptop_dual_node
+#   docker compose up -d
+
+version: "3.8"
+
+services:
+  postgres_node1:
+    image: postgres:16
+    container_name: bdd_postgres_node1
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin_biblioteca
+      POSTGRES_PASSWORD: BiblioPG2026
+      POSTGRES_DB: biblioteca
+    ports:
+      - "192.168.10.1:5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  mysql_node2:
+    image: mysql:8.4
+    container_name: bdd_mysql_node2
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: BiblioMy2026
+      MYSQL_DATABASE: biblioteca
+    ports:
+      - "192.168.10.2:3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  pg_data:
+  mysql_data:
